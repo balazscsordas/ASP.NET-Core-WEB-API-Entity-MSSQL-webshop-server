@@ -6,5 +6,6 @@ namespace server.Services.ProductService
     {
         Task<ServiceResponse<List<ProductByCategoryIdDto>>> GetProductsByCategoryId(int categoryId);
         Task<ServiceResponse<ProductPageProductDataWithOptionsDto>> GetProductDataWithOptions(string productName, string? size, string? volume);
+        Task<ServiceResponse<List<ProductByCategoryIdDto>>> GetNewProducts();
     }
 }

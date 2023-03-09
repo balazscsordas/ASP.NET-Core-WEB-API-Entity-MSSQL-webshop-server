@@ -95,5 +95,28 @@
 
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<List<ProductByCategoryIdDto>>> GetNewProducts()
+        {
+            var serviceResponse = new ServiceResponse<List<ProductByCategoryIdDto>>();
+            try
+            {
+                var dbNewProducts = await _context.Products
+                    .GroupBy(p => p.Name)
+                    .Select(p => p.First())
+                    .Take(6)
+                    .ToListAsync();
+                if (dbNewProducts is null || dbNewProducts.Count == 0) throw new Exception("There isn't any product!");
+                serviceResponse.Data = _mapper.Map<List<ProductByCategoryIdDto>>(dbNewProducts);
+                serviceResponse.Message = "Successfully fetched 6 product.";
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
     }
 }

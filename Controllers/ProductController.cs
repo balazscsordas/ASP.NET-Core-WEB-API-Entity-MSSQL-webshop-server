@@ -14,16 +14,22 @@ namespace server.Controllers
             _productService = productService;
         }
 
-        [HttpGet("getProductDataByName")]
+        [HttpGet("GetProductDataByName")]
         public async Task<ActionResult<ServiceResponse<ProductPageProductDataWithOptionsDto>>> GetProductDataWithOptions(string productName, string? size, string? volume)
         {
             return Ok(await _productService.GetProductDataWithOptions(productName, size, volume));
         }
 
-        [HttpGet("getProductsByCategoryId")]
+        [HttpGet("GetProductsByCategoryId")]
         public async Task<ActionResult<ServiceResponse<ProductPageDto>>> GetProductsByCategoryId(int categoryId)
         {
             return Ok(await _productService.GetProductsByCategoryId(categoryId));
+        }
+
+        [HttpGet("GetNewProducts")]
+        public async Task<ActionResult<ServiceResponse<List<ProductByCategoryIdDto>>>> GetNewProducts()
+        {
+            return Ok(await _productService.GetNewProducts());
         }
     }
 }

@@ -18,5 +18,11 @@ namespace server.Controllers
         {
             return Ok(await _categoryService.GetAllCategories());
         }
+
+        [HttpGet("GetProductOptions")]
+        public async Task<ActionResult<ServiceResponse<ProductOptionsDto>>> GetProductOptions(int categoryId)
+        {
+            return Ok(await _categoryService.GetProductOptions(categoryId));
+        }
     }
 }
