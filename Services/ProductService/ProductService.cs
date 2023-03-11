@@ -11,6 +11,13 @@
             _context = context;
         }
 
+        private List<string> ConvertStringToList (string value)
+        {
+            if (value == null)
+                return new List<string>();
+            var list = value.Split (',').Select (s => s.Trim ()).ToList();
+            return list;
+        }
         private async Task<List<ProductPageDto>> GetProductsByName(string productName, string? size, string? volume)
         {
             var dbProducts = await _context.Products.Where(p => 
@@ -50,7 +57,7 @@
             return volumeOptions;
         }
 
-        public async Task<ServiceResponse<ProductPageProductDataWithOptionsDto>> GetProductDataWithOptions(string productName, string? size, string? volume)
+        public async Task<ServiceResponse<ProductPageProductDataWithOptionsDto>> GetProductDataWithOptions(string productName, int? id, string? size, string? volume)
         {
             var serviceResponse = new ServiceResponse<ProductPageProductDataWithOptionsDto>();
             try
@@ -60,7 +67,14 @@
                     throw new Exception($"There isn't any product with name: {productName}!");
                 var sizeOptions = GetSizeOptions(dbProducts);
                 var volumeOptions = GetVolumeOptions(dbProducts);
-                var productDataWithOptions = new ProductPageProductDataWithOptionsDto(dbProducts.First(), sizeOptions, volumeOptions);
+                var product = dbProducts.First();
+                if (id != null)
+                {
+                    product = dbProducts.First(p => p.Id == id);
+                    if (product is null)
+                        throw new Exception($"There isn't any product with id: {id} and name: {productName}!");
+                }
+                var productDataWithOptions = new ProductPageProductDataWithOptionsDto(product, sizeOptions, volumeOptions);
                 serviceResponse.Data = productDataWithOptions;
                 serviceResponse.Message = "Successfully fetched the product details and the available options.";
             } 
@@ -73,13 +87,21 @@
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<ProductByCategoryIdDto>>> GetProductsByCategoryId(int categoryId)
+        public async Task<ServiceResponse<List<ProductByCategoryIdDto>>> GetProductsByCategoryId(int categoryId, Boolean? onStock, int? minPrice, int? maxPrice, string? sizes, string? volumes)
         {
             var serviceResponse = new ServiceResponse<List<ProductByCategoryIdDto>>();
             try
             {
+                var sizesList = ConvertStringToList(sizes);
+                var volumesList = ConvertStringToList(volumes);
+
                 var dbProducts = await _context.Products
                     .Where(p => p.CategoryId == categoryId)
+                    .Where(p => (onStock == true ? p.CurrentStock > 0 : true == true))
+                    .Where(p => (minPrice.HasValue ? p.UnitPrice >= minPrice : true == true))
+                    .Where(p => (maxPrice.HasValue ? p.UnitPrice <= maxPrice : true == true))
+                    .Where(p => (sizesList.Count > 0 ? sizesList.Contains(p.Size) : true == true))
+                    .Where(p => (volumesList.Count > 0 ? volumesList.Contains(p.Volume) : true == true))
                     .GroupBy(p => p.Name)
                     .Select(p => p.First())
                     .ToListAsync();

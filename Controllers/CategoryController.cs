@@ -20,9 +20,9 @@ namespace server.Controllers
         }
 
         [HttpGet("GetProductOptions")]
-        public async Task<ActionResult<ServiceResponse<ProductOptionsDto>>> GetProductOptions(int categoryId)
+        public async Task<ActionResult<ServiceResponse<ProductOptionsDto>>> GetProductOptions(int id)
         {
-            return Ok(await _categoryService.GetProductOptions(categoryId));
+            return Ok(await _categoryService.GetProductOptions(id));
         }
     }
 }

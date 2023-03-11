@@ -15,15 +15,15 @@ namespace server.Controllers
         }
 
         [HttpGet("GetProductDataByName")]
-        public async Task<ActionResult<ServiceResponse<ProductPageProductDataWithOptionsDto>>> GetProductDataWithOptions(string productName, string? size, string? volume)
+        public async Task<ActionResult<ServiceResponse<ProductPageProductDataWithOptionsDto>>> GetProductDataWithOptions(string productName, int? id, string? size, string? volume)
         {
-            return Ok(await _productService.GetProductDataWithOptions(productName, size, volume));
+            return Ok(await _productService.GetProductDataWithOptions(productName, id, size, volume));
         }
 
         [HttpGet("GetProductsByCategoryId")]
-        public async Task<ActionResult<ServiceResponse<ProductPageDto>>> GetProductsByCategoryId(int categoryId)
+        public async Task<ActionResult<ServiceResponse<ProductPageDto>>> GetProductsByCategoryId(int id, Boolean? onStock, int? minPrice, int? maxPrice, string? sizes, string? volumes)
         {
-            return Ok(await _productService.GetProductsByCategoryId(categoryId));
+            return Ok(await _productService.GetProductsByCategoryId(id, onStock, minPrice, maxPrice, sizes, volumes));
         }
 
         [HttpGet("GetNewProducts")]
